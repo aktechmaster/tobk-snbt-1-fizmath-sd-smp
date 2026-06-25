@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TOBK 1 SNBT 2026</title>
+    <style>
+    :root {
+        --primary: #0e3b68;
+        --accent: #2c7be5;
+        --bg-body: #f4f6f9;
+        --text-main: #333;
+        --text-muted: #6c757d;
+        --border-color: #dee2e6;
+        --danger: #d9534f;
+        --warning: #ffc107;
+        --success: #198754;
+    }
+
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+
+    /* BODY & GLOBAL */
+    body {
+        margin: 0; 
+        width: 100vw;
+        min-height: 100vh; 
+        background: var(--bg-body); 
+        color: var(--text-main);
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        overflow-y: auto; /* Mengizinkan scroll vertikal di laptop/desktop */
+    padding: 40px 0;  /* Memberi ruang atas bawah agar card tidak nempel ke layar */
+}
+
+    @media (max-width: 768px) {
+        body {
+            display: block; 
+            height: auto;
+            overflow-y: auto; 
+            overflow-x: hidden;
+            padding: 20px 0; 
+        }
+    }
+
+    /* LOGIN STYLES */
+    .login-container {
+        display: flex; 
+        width: 95%; 
+        max-width: 900px; 
+        min-height: 500px; 
+        height: auto; 
+        background: white; 
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        overflow: hidden; 
+        position: relative; 
+        z-index: 100;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        margin: auto; 
+    }
+
+    @media (max-width: 768px) {
+        .login-container {
+            flex-direction: column;
+            height: auto; 
+            min-height: auto;
+            margin-bottom: 50px; 
+        }
+        .info-side { padding: 30px 20px; text-align: center; }
+        .form-side { padding: 30px 20px; }
+    }
+
+    .info-side {
+        flex: 1; background: linear-gradient(135deg, var(--primary) 0%, #1a5c9e 100%);
+        color: white; padding: 40px; display: flex; flex-direction: column; justify-content: center;
+    }
+    .info-side h1 { font-size: 28px; margin-bottom: 10px; font-weight: 700; margin-top: 0; }
+    .info-side p { line-height: 1.6; opacity: 0.9; font-size: 14px; }
+    .exam-badge {
+        background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px;
+        font-size: 12px; display: inline-block; margin-bottom: 20px; width: fit-content;
+    }
+    @media (max-width: 768px) { .exam-badge { margin: 0 auto 20px auto; } }
+
+    .system-check { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; font-size: 12px; }
+    .check-item { margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+    @media (max-width: 768px) { .check-item { justify-content: center; } }
+    .dot { width: 8px; height: 8px; background: #00ff88; border-radius: 50%; }
+
+    .form-side { flex: 1.2; padding: 40px 50px; overflow-y: auto; }
+    .form-header { text-align: center; margin-bottom: 30px; }
+    .form-header h2 { margin: 0; color: var(--primary); }
+    .form-header span { color: var(--text-muted); font-size: 13px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px; }
+    .form-control {
+        width: 100%; padding: 12px 15px; border: 1px solid var(--border-color);
+        border-radius: 6px; font-size: 14px; transition: all 0.3s;
+    }
+    .form-control:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.1); }
+    .row { display: flex; gap: 15px; } .col { flex: 1; }
+    @media (max-width: 768px) { .row { flex-direction: column; gap: 15px; } }
+
+    .btn-submit {
+        width: 100%; padding: 14px; background: var(--primary); color: white;
+        border: none; border-radius: 6px; font-weight: 600; cursor: pointer;
+        font-size: 15px; transition: background 0.3s; margin-top: 10px;
+    }
+    .btn-submit:hover { background: #0b2e52; }
+
+    /* SOP / LOBBY STYLES */
+    .sop-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: var(--primary); z-index: 90; display: none;
+        align-items: center; justify-content: center; opacity: 0; transition: opacity 0.5s ease;
+        overflow-y: auto; padding: 20px 0;
+    }
+    .sop-card {
+        background: white; width: 95%; max-width: 850px; 
+        height: auto; max-height: 95vh;
+        border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+    }
+    .sop-header {
+        padding: 25px 30px; background: #fff; border-bottom: 1px solid #eee;
+        display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+    .user-name-big { font-weight: 700; color: var(--primary); font-size: 16px; display: block; }
+    .user-meta { font-size: 13px; color: var(--text-muted); }
+    .sop-content { padding: 20px; overflow-y: auto; flex: 1; }
+    
+    .security-box {
+        background: #fff5f5; border-left: 5px solid var(--danger); padding: 15px 20px;
+        border-radius: 4px; margin-bottom: 25px; display: flex; gap: 15px; align-items: center;
+    }
+    .security-icon { font-size: 24px; color: var(--danger); }
+    .security-text h4 { margin: 0 0 5px 0; color: #c92a2a; font-size: 15px; }
+    .security-text p { margin: 0; font-size: 13px; color: #495057; }
+
+    .schedule-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 10px; }
+    .schedule-table th { background: #f8f9fa; color: var(--text-muted); font-weight: 600; text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; }
+    .schedule-table td { padding: 12px; border-bottom: 1px solid #eee; }
+    .badge-time { background: #e7f5ff; color: var(--accent); padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+
+    .sop-footer {
+        display: flex; flex-direction: row; gap: 8px; padding: 12px 10px; background: #f8f9fa; flex-shrink: 0;
+    }
+    .btn-back {
+        flex: 1; background-color: #ffc107 !important; color: #000 !important;
+        border: none !important; margin: 0 !important; padding: 12px 5px !important;
+        font-size: 12px; font-weight: 700; text-align: center; border-radius: 6px;
+    }
+    .btn-start {
+        flex: 1; background-color: var(--primary) !important; color: white !important;
+        border: none !important; margin: 0 !important; padding: 12px 5px !important;
+        font-size: 12px; font-weight: 700; text-align: center; border-radius: 6px;
+    }
+
+    /* EXAM INTERFACE */
+    #examInterface {
+        display: none; 
+        position: fixed; 
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100%; height: 100%; 
+        height: 100dvh; 
+        flex-direction: column;
+        background: #fff; 
+        z-index: 9999;
+        overflow: hidden;
+    }
+
+    .exam-header {
+        height: 65px; background: white; border-bottom: 3px solid var(--primary);
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 1000;
+        flex-shrink: 0; 
+    }
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    .exam-title { font-weight: bold; font-size: 18px; color: var(--primary); }
+    .subtest-badge { background: #e9ecef; color: #495057; padding: 4px 10px; border-radius: 4px; font-size: 13px; }
+    .timer-container { background: var(--primary); color: white; padding: 8px 15px; border-radius: 6px; font-weight: bold; letter-spacing: 1px; font-size: 16px; }
+
+    .exam-layout {
+        width: 100%; height: 100%; 
+        display: flex; 
+        overflow: hidden;
+        position: relative;
+    }
+
+    .exam-sidebar {
+        width: 320px; background: white; border-right: 1px solid #dee2e6;
+        display: flex; flex-direction: column; box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+        height: 100%; z-index: 5;
+    }
+    .student-card { padding: 20px; background: #f8f9fa; border-bottom: 1px solid #eee; text-align: center; }
+    .student-img { 
+        width: 80px; height: 80px; border-radius: 50%; background: #ddd; margin: 0 auto 10px;
+        border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); object-fit: cover;
+    }
+    .student-name { font-weight: bold; color: var(--text-main); font-size: 14px; margin-bottom: 2px; }
+    .student-no { font-size: 12px; color: #666; background: #e9ecef; padding: 2px 8px; border-radius: 10px; }
+
+    .nav-section { flex: 1; padding: 15px; overflow-y: auto; }
+    .nav-label { font-size: 12px; font-weight: bold; color: #666; margin-bottom: 10px; text-transform: uppercase; }
+    .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .nav-box {
+        aspect-ratio: 1; border: 1px solid #ced4da; border-radius: 4px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; font-weight: 600; cursor: pointer; background: white; transition: all 0.2s;
+    }
+    .nav-box:hover { background: #f1f3f5; }
+    .nav-box.active { border: 2px solid var(--primary); transform: scale(1.05); box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2; }
+    .nav-box.answered { background: var(--primary); color: white; border-color: var(--primary); }
+    .nav-box.doubt { background: var(--warning); color: black; border-color: #d39e00; }
+    .nav-legend { padding: 15px; border-top: 1px solid #eee; font-size: 11px; color: #666; background: #fff; }
+    .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .legend-box { width: 12px; height: 12px; border-radius: 2px; border: 1px solid #ccc; }
+
+    .exam-content { 
+        flex: 1; padding: 30px; overflow-y: auto; 
+        display: flex; flex-direction: column; position: relative;
+        padding-bottom: 100px; 
+    }
+    
+    .q-meta { display: flex; justify-content: space-between; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; align-items: center; }
+    .q-number { font-size: 20px; font-weight: bold; color: var(--primary); }
+    .q-text { font-size: 18px; line-height: 1.7; color: #212529; margin-bottom: 30px; }
+    
+    .option-container { display: flex; flex-direction: column; gap: 12px; }
+    .option-card {
+        display: flex; padding: 15px; border: 1px solid #dee2e6; border-radius: 8px;
+        cursor: pointer; transition: all 0.2s; align-items: flex-start;
+    }
+    .option-card:hover { background: #f8f9fa; border-color: #adb5bd; }
+    .option-card.selected { background: #e7f5ff; border-color: var(--accent); }
+    .opt-letter {
+        width: 28px; height: 28px; background: #e9ecef; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-weight: bold;
+        margin-right: 15px; flex-shrink: 0; font-size: 14px; color: #495057;
+    }
+    .option-card.selected .opt-letter { background: var(--accent); color: white; }
+
+    .action-bar {
+        position: absolute; bottom: 0; right: 0; 
+        left: 320px; 
+        height: 70px; background: white; border-top: 1px solid #dee2e6;
+        display: flex; justify-content: space-between; align-items: center; padding: 0 40px;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 20;
+    }
+    .btn-act { padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; border: 1px solid #ced4da; background: white; font-size: 14px; }
+    .btn-prev { background: #f8f9fa; color: #495057; }
+    .btn-doubt { background: #fff3cd; border-color: #ffeeba; color: #856404; }
+    .btn-next { background: var(--primary); border-color: var(--primary); color: white; }
+
+    /* MODAL STYLES */
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 99999;
+    }
+    .modal-card {
+        background: white; width: 90%; max-width: 450px; border-radius: 8px; overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s ease;
+    }
+    .modal-header { background: var(--primary); color: white; padding: 15px; font-weight: bold; text-align: center; }
+    .modal-body { padding: 20px; text-align: center; }
+    .stat-container { display: flex; justify-content: space-around; margin: 20px 0; background: #f8f9fa; padding: 15px; border-radius: 8px; }
+    .stat-box { display: flex; flex-direction: column; }
+    .stat-num { font-size: 24px; font-weight: bold; color: var(--primary); }
+    .stat-label { font-size: 12px; color: #666; }
+    .warning-text { color: var(--danger); font-size: 13px; font-style: italic; font-weight: bold; }
+    .modal-footer { display: flex; gap: 10px; padding: 15px; background: #eee; }
+    .btn-cancel { flex: 1; padding: 12px; border: none; background: #ccc; border-radius: 4px; cursor: pointer; }
+    .btn-confirm-finish { flex: 1; padding: 12px; border: none; background: var(--success); color: white; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* MOBILE RESPONSIVE FIXES */
+    @media (max-width: 768px) {
+        .exam-layout { flex-direction: column; }
+        .exam-header { padding: 0 15px; height: 55px; }
+        .exam-title { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
+        .timer-container { padding: 5px 10px; font-size: 14px; }
+
+        .exam-sidebar { 
+            width: 100%; height: auto; border-right: none; border-bottom: 1px solid #dee2e6;
+            flex-direction: row; align-items: center; padding: 5px; overflow-x: auto;
+        }
+        .student-card { display: flex; align-items: center; padding: 5px 10px; border: none; background: transparent; min-width: 180px; gap: 10px; }
+        .student-img { width: 40px; height: 40px; margin: 0; border: 2px solid white; }
+        .student-name { font-size: 12px; }
+        .student-no { display: none; } 
+
+        .nav-section { display: flex; flex: 1; padding: 5px; height: 50px; overflow-x: auto; overflow-y: hidden; }
+        .nav-grid { display: flex; gap: 5px; }
+        .nav-box { min-width: 35px; height: 35px; font-size: 12px; }
+        .nav-label, .nav-legend { display: none; }
+
+        .exam-content { padding: 15px; padding-bottom: 90px; }
+        .q-text { font-size: 15px; }
+        .opt-text { font-size: 14px; }
+
+        .action-bar { 
+            left: 0; padding: 10px; height: auto; 
+            position: fixed; bottom: 0; display: flex; gap: 5px; 
+        }
+        .btn-act { padding: 8px 12px; font-size: 12px; flex: 1; margin: 0 2px; text-align: center; }
+    }
+
+    /* PENGAMAN KONTEN SOAL */
+    .q-text img { max-width: 100% !important; height: auto !important; border-radius: 4px; }
+    .q-text table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; }
+
+    /* KEAMANAN TAMPILAN */
+    body, .q-text, .option-card {
+        -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; 
+    }
+    input, textarea { user-select: text !important; -webkit-user-select: text !important; }
+
+    /* STYLE LAYAR BLOKIR */
+    #blockScreen {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+        background: #d9534f; z-index: 100000; display: none;
+        align-items: center; justify-content: center;
+        color: white; text-align: center;
+    }
+    .block-content {
+        background: rgba(0,0,0,0.2); padding: 30px; border-radius: 12px;
+        width: 90%; max-width: 500px; border: 2px solid white;
+        animation: shake 0.5s;
+    }
+
+    /* ======================================================== */
+    /* [BARU] STYLES UNTUK POPUP PERINGATAN CUSTOM (MERAH KUNING) */
+    /* ======================================================== */
+    .warning-modal-overlay {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(50, 0, 0, 0.9); /* Latar merah gelap */
+        z-index: 110000; /* Di atas segalanya */
+        justify-content: center; align-items: center;
+        backdrop-filter: blur(5px);
+    }
+    .warning-modal-box {
+        background: #fff; width: 90%; max-width: 500px; border-radius: 12px; overflow: hidden;
+        box-shadow: 0 10px 30px rgba(255, 0, 0, 0.6), 0 0 0 5px #ff0000;
+        text-align: center; font-family: sans-serif;
+    }
+    .warning-header {
+        background: #d32f2f; color: #fff200; font-size: 24px; font-weight: bold;
+        padding: 20px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 4px solid #ff0000;
+    }
+    .warning-body { padding: 25px; color: #333; }
+    .warning-title { font-size: 18px; font-weight: bold; color: #d32f2f; margin-bottom: 15px; }
+    .warning-count-box {
+        background: #fff3cd; border: 2px solid #ffc107; display: inline-block;
+        padding: 10px 20px; font-size: 20px; font-weight: bold; color: #856404;
+        border-radius: 8px; margin: 10px 0;
+    }
+    #modalViolationCount { font-size: 28px; color: #d32f2f; }
+    .warning-remaining strong { color: #d32f2f; font-size: 1.2em; }
+    .warning-btn {
+        width: 100%; padding: 15px; background: #d32f2f; color: white; border: none;
+        font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; text-transform: uppercase;
+    }
+    .warning-btn:hover { background: #b71c1c; }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    .animate-shake { animation: shake 0.5s; }
+
+    /* STYLES UNTUK MODAL SERTIFIKAT (GAMBAR 2) */
+#certificateModal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 200000; justify-content: center; align-items: center;
+    overflow-y: auto; padding: 20px;
+}
+.cert-card {
+    background: white; width: 100%; max-width: 900px; padding: 40px;
+    border-radius: 4px; font-family: "Times New Roman", Times, serif; color: #000;
+}
+.cert-header {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;
+}
+.cert-header img { height: 50px; }
+.cert-header-text { text-align: center; flex-grow: 1; }
+.cert-header-text h1 { margin: 0; font-size: 22px; letter-spacing: 1px; }
+
+.cert-main-title { text-align: center; margin-bottom: 20px; }
+.cert-main-title h2 { margin: 0; font-size: 18px; text-decoration: underline; font-weight: bold; }
+
+.cert-content { display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 10px; }
+.cert-left { width: 45%; }
+.cert-right { width: 50%; }
+
+.cert-user-table td { padding: 4px 2px; font-size: 13px; vertical-align: top; }
+.cert-desc { font-size: 13px; margin-top: 15px; line-height: 1.4; text-align: justify; }
+
+.cert-score-table { width: 100%; border-collapse: collapse; }
+.cert-score-table td { padding: 4px 8px; font-size: 13px; border: 1px solid #000; }
+.cert-score-table .group-title { font-weight: bold; background: #eee; }
+
+.cert-footer-box { margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+.qr-placeholder { width: 100px; height: 100px; border: 1px solid #000; display: flex; align-items: center; text-align: center; font-size: 10px; }
+
+.cert-buttons { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
+.btn-print { padding: 8px 16px; background: #0e3b68; color: white; border: none; cursor: pointer; }
+.btn-close { padding: 8px 16px; background: #666; color: white; border: none; cursor: pointer; }
+
+@media print {
+    .cert-buttons { display: none; }
+    body * { visibility: hidden; }
+    #certificateModal, #certificateModal * { visibility: visible; }
+    #certificateModal { position: absolute; left: 0; top: 0; width: 100%; background: white; }
+}
+
+    
+    /* --- Tambahan CSS Baru --- */
+
+/* Utility class untuk menebalkan teks (Poin 3 & 4) */
+.fw-bold {
+    font-weight: 700 !important; /* Menggunakan !important untuk memastikan ia menimpa style lain */
+}
+
+/* Poin 2: Membuat Background Watermark Transparan */
+/* Kita menggunakan pseudo-element ::before agar bisa mengatur opacity hanya pada background image, bukan teksnya */
+.cert-card.has-watermark {
+    position: relative;
+    /* Pastikan z-index diatur agar konten tetap di atas background */
+    z-index: 1; 
+    overflow: hidden; /* Mencegah watermark keluar dari kotak sertifikat */
+}
+
+.cert-card.has-watermark::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Pastikan path ke fizmath.png benar */
+    background-image: url('fizmath.jpeg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    /* Gunakan 'contain' agar logo utuh di tengah, atau 'cover' agar memenuhi area */
+    background-size: 50%; /* Sesuaikan ukuran watermark di sini (misal 50% dari lebar kartu) */
+    opacity: 0.15; /* Poin 2: Mengatur transparansi (0.1 - 0.2 biasanya pas untuk watermark) */
+    z-index: -1; /* Meletakkan background di belakang konten teks */
+}
+
+
+/* Container untuk Tanda Tangan & Teks */
+.signature-area {
+    display: flex;           /* Menggunakan Flexbox agar isinya mudah diatur */
+    flex-direction: column;  /* Menyusun isi (gambar & teks) secara vertikal (atas-bawah) */
+    align-items: center;     /* Memastikan gambar dan teks rata tengah satu sama lain */
+    width: fit-content;      /* Lebar kotak menyesuaikan isi, tidak lebar penuh halaman */
+    min-width: 200px;        /* Memberi lebar minimal agar teks tidak terlalu terpotong */
+    margin-top: 20px;        /* Jarak dari paragraf atas */
+    margin-left: 0;          /* Rata kiri sejajar dengan teks di atasnya */
+}
+
+/* Pengaturan Gambar Tanda Tangan */
+.signature-img {
+    height: 100px;           /* PERBAIKAN 1: Ukuran diperbesar (sebelumnya mungkin terlalu kecil) */
+    width: auto;             /* Lebar menyesuaikan agar gambar tidak gepeng/distorsi */
+    object-fit: contain;     /* Memastikan gambar utuh dalam kotak */
+    margin-bottom: 5px;      /* Jarak kecil antara tanda tangan dan teks di bawahnya */
+}
+
+/* Pengaturan Teks di Bawah Tanda Tangan */
+.signature-text {
+    font-size: 14px;         /* Ukuran font disesuaikan */
+    font-weight: bold;       /* Tebal */
+    color: #333;
+    text-align: center;      /* Rata tengah relatif terhadap gambar tanda tangan */
+    margin: 0;               /* Menghapus margin bawaan agar menempel rapi */
+    line-height: 1.2;        /* Jarak antar baris jika teks lebih dari 1 baris */
+}
+
+        /* PERBAIKAN AMAN: Penyesuaian Teks Otomatis */
+.q-text, .cert-user-table, .cert-score-table {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+.cert-score-table td {
+    font-size: clamp(11px, 2.5vw, 13px) !important;
+}
+
+
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script>
+// PERBAIKAN: Jalankan render hanya jika library berhasil dimuat
+window.addEventListener('load', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+      ],
+      throwOnError: false,
+      errorColor: '#cc0000'
+    });
+  }
+});
+</script>
+
+</head>
+<body>
+
+    <div id="blockScreen" style="display: none;">
+        <div class="block-content">
+            <div style="font-size: 50px;">🚫</div>
+            <h2>UJIAN DIBLOKIR</h2>
+            <p>Anda terdeteksi melakukan kecurangan (Pindah Tab / Layar Belah) sebanyak <span id="violationCountDisplay">0</span> kali.</p>
+            <p>Silakan hubungi Pengawas/Proktor untuk membuka kunci.</p>
+        </div>
+    </div>
+
+    <div id="customWarningModal" class="warning-modal-overlay">
+        <div class="warning-modal-box animate-shake">
+            <div class="warning-header">⚠️ PERINGATAN KERAS! ⚠️</div>
+            <div class="warning-body">
+                <p class="warning-title">TERDETEKSI MENINGGALKAN HALAMAN</p>
+                <div class="warning-count-box">
+                    Pelanggaran Ke: <span id="modalViolationCount">0</span>
+                </div>
+                <p>Anda dilarang pindah tab, membuka aplikasi lain, atau meminimalisir browser selama ujian berlangsung.</p>
+                <p class="warning-remaining">Sisa Kesempatan: <strong id="modalRemainingCount">0</strong> kali lagi.</p>
+            </div>
+            <button id="closeWarningBtn" class="warning-btn">SAYA PAHAM & KEMBALI MENGERJAKAN</button>
+        </div>
+    </div>
+
+    <div class="login-container" id="loginCard">
+        <div class="info-side">
+            <img src="sikatsnbt.png" alt="Logo" style="height: 110px; margin-bottom: 20px; display: block;" onerror="this.style.opacity='0'"> 
+            <div class="exam-badge">SIMULASI TOBK SNBT TAHUN 2027</div>
+            <h1>TOBK SNBT 1</h1>
+            <p>Selamat datang di laman ujian berbasis komputer. Pastikan Anda membaca tata tertib sebelum memulai ujian.</p>
+            <p style="margin-top: 20px; font-size: 13px;">
+                <strong>Perhatian:</strong><br>
+                Sistem ini dilengkapi dengan <em>AI Proctoring</em>. Segala bentuk kecurangan seperti berpindah tab atau aplikasi akan terdeteksi dan tercatat otomatis.
+            </p>
+            <div class="system-check">
+                <div class="check-item"><div class="dot"></div> Koneksi Internet Stabil</div>
+                <div class="check-item"><div class="dot"></div> Browser Kompatibel</div>
+                <div style="margin-top: 50px; font-size: 11px; opacity: 0.7; color: white;">
+    &copy; 2026 aktechmaster | Designed & Developed by aktechmaster
+</div>
+            </div>
+        </div>
+        <div class="form-side">
+            <div class="form-header">
+                <h2>Konfirmasi Data Peserta</h2>
+                <span>Silakan isi data diri Anda dengan benar.</span>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" class="form-control" id="fullname" placeholder="CONTOH: BUDI SANTOSO" required oninput="this.value = this.value.toUpperCase()"
+        style="text-transform: uppercase">
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group"><label>Nomor Peserta</label><input type="number" inputmode="numeric" class="form-control" id="participantId" required></div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group"><label>NISN</label><input type="number" inputmode="numeric" class="form-control" id="nisn" required></div>
+                    </div>
+                </div>
+                
+                <div class="form-group"><label>Asal Sekolah</label><input type="text" class="form-control" id="school" required oninput="this.value = this.value.toUpperCase()"
+                style="text-transform: uppercase"></div>
+                <div class="form-group"><label>Tanggal Lahir</label><input type="date" class="form-control" id="dob" required></div>
+                
+                <div class="form-group">
+                <label>Alamat Email</label>
+                <input type="email" class="form-control" id="email" placeholder="contoh: nama@email.com" required>
+                </div>
+
+
+            <div class="form-group" style="margin-top: 12px;">
+  <label><b>Pilihan Universitas 1</b></label>
+  <input list="list-univ-1" id="univ-1" class="form-control" placeholder="Ketik & pilih kampus 1...">
+  <datalist id="list-univ-1"></datalist>
+</div>
+
+<div class="form-group" style="margin-top: 8px;">
+  <label>Pilihan Jurusan 1</label>
+  <select id="jurusan-1" class="form-control" disabled>
+    <option value="">-- Pilih Universitas 1 Terlebih Dahulu --</option>
+  </select>
+</div>
+
+<hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
+
+<div class="form-group">
+  <label><b>Pilihan Universitas 2</b></label>
+  <input list="list-univ-2" id="univ-2" class="form-control" placeholder="Ketik & pilih kampus 2...">
+  <datalist id="list-univ-2"></datalist>
+</div>
+
+<div class="form-group" style="margin-top: 8px;">
+  <label>Pilihan Jurusan 2</label>
+  <select id="jurusan-2" class="form-control" disabled>
+    <option value="">-- Pilih Universitas 2 Terlebih Dahulu --</option>
+  </select>
+</div>
+                
+                <div class="form-group" style="display:flex; gap:10px; margin-top:20px;">
+                    <input type="checkbox" id="consent" required style="margin-top:4px;">
+                    <label for="consent" style="font-weight:400; font-size:12px; color:#666; cursor:pointer;">Saya menyatakan bahwa data yang saya isikan adalah benar. Saya siap mengerjakan ujian dengan jujur dan menerima sanksi diskualifikasi (layar merah/blokir) jika terdeteksi melakukan kecurangan..</label>
+                </div>
+                <button type="submit" class="btn-submit">VERIFIKASI & MASUK RUANG UJIAN</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="sopOverlay" class="sop-overlay">
+        <div class="sop-card">
+            <div class="sop-header">
+                <div>
+                    <h3 style="margin:0; color:var(--primary);">TATA TERTIB TOBK</h3>
+                    <span style="font-size:12px; color:#666;">SNBT 2026</span>
+                </div>
+                <div class="user-info-display" id="userDisplayLobby"></div>
+            </div>
+            <div class="sop-content">
+                <div class="security-box">
+                    <div class="security-icon">⚠️</div>
+                    <div class="security-text">
+                        <h4>PAKTA INTEGRITAS & KEAMANAN</h4>
+                        <p>Sistem ini menggunakan <strong>Lockdown Browser Logic</strong>. Dilarang keras membuka tab baru, aplikasi kalkulator, atau melakukan <em>screenshot</em>. Pelanggaran berulang (>5x) akan menyebabkan akun diblokir permanen.</p>
+                    </div>
+                </div>
+
+                <p style="font-size:14px; margin-bottom:10px;">Rincian Subtes:</p>
+
+                <table class="schedule-table">
+                    <thead>
+                        <tr><th width="5%">No</th><th>Komponen Ujian</th><th>Jumlah Soal</th><th>Alokasi Waktu</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>Penalaran Umum</td><td>30 Soal</td><td><span class="badge-time">30 Menit</span></td></tr>
+                        <tr><td>2</td><td>Pengetahuan & Pemahaman Umum</td><td>20 Soal</td><td><span class="badge-time">15 Menit</span></td></tr>
+                        <tr><td>3</td><td>Pemahaman Bacaan & Menulis</td><td>20 Soal</td><td><span class="badge-time">25 Menit</span></td></tr>
+                        <tr><td>4</td><td>Pengetahuan Kuantitatif</td><td>20 Soal</td><td><span class="badge-time">20 Menit</span></td></tr>
+                        <tr><td>5</td><td>Literasi Bahasa Indonesia</td><td>30 Soal</td><td><span class="badge-time">45 Menit</span></td></tr>
+                        <tr><td>6</td><td>Literasi Bahasa Inggris</td><td>20 Soal</td><td><span class="badge-time">30 Menit</span></td></tr>
+                        <tr><td>7</td><td>Penalaran Matematika</td><td>20 Soal</td><td><span class="badge-time">42.5 Menit</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="sop-footer">
+                <button onclick="backToLogin()" class="btn-back">⬅ PERBAIKI DATA</button>
+                <button onclick="startExamReal()" class="btn-start">SAYA PAHAM & MULAI ➜</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="examInterface">
+        <div class="exam-header">
+            <div class="header-left">
+                <img src="fizmath.jpeg" height="30" onerror="this.style.display='none'">
+                <div>
+                    <div class="exam-title">TRY OUT UTBK-SNBT</div>
+                    <span class="subtest-badge">Subtes 1: Penalaran Umum</span>
+                </div>
+            </div>
+            <div class="timer-container" id="timerDisplay">30:00</div>
+        </div>
+
+        <div class="exam-layout">
+            <div class="exam-sidebar">
+                <div class="student-card">
+                    <img src="nopicture.png" class="student-img" alt="Foto">
+                    <div class="student-name" id="sideName">Nama Siswa</div>
+                    <span class="student-no" id="sideNomor">No. Peserta</span>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-label">Navigasi Soal</div>
+                    <div class="nav-grid" id="navGrid"></div>
+                </div>
+                <div class="nav-legend">
+                    <div class="legend-item"><div class="legend-box" style="border:1px solid #ccc"></div> Belum Dijawab</div>
+                    <div class="legend-item"><div class="legend-box" style="background:var(--primary)"></div> Sudah Dijawab</div>
+                    <div class="legend-item"><div class="legend-box" style="border:1px solid hsl(66, 100%, 50%)"></div> Ragu-ragu</div>
+                </div>
+            </div>
+
+            <div class="exam-content">
+                <div class="question-paper">
+                    <div class="q-meta">
+                        <span class="q-number" id="qNumberDisplay">Soal No. 1</span>
+                        <div class="font-resizer">
+                            <span onclick="resizeFont(16)">A-</span>
+                            <span onclick="resizeFont(22)">A+</span>
+                        </div>
+                    </div>
+                    
+                    <div id="qTextDisplay" class="q-text">Loading...</div>
+                    <div class="option-container" id="optionsContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn-act btn-prev" onclick="prevQuestion()">❮ PREV</button>
+            <div> 
+                <button class="btn-act btn-doubt" onclick="toggleDoubt()">☐ RAGU</button>
+                <button class="btn-act btn-next" onclick="nextQuestion()">NEXT ❯</button>
+                <button class="btn-act" onclick="finishExam()" style="background:var(--success); color:white;">SELESAI</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="finishModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div id="modalHeader" class="modal-header">KONFIRMASI SUBTES</div>
+            <div class="modal-body">
+                <p id="modalMessage">Anda akan mengakhiri subtes ini.</p>
+                <div class="stat-container">
+                    <div class="stat-box"><span id="statAnswered" class="stat-num">0</span><span class="stat-label">Terjawab</span></div>
+                    <div class="stat-box"><span id="statUnanswered" class="stat-num">0</span><span class="stat-label">Belum Diisi</span></div>
+                </div>
+                <p id="timeWarning" class="warning-text"></p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeFinishModal()" class="btn-cancel">KEMBALI</button>
+                <button id="confirmBtn" class="btn-confirm-finish">LANJUT</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="soal.js"></script>
+
+    <script>
+    
+    // Tambahkan variabel ini di deretan variabel paling atas
+    let isExamFinished = false;
+
+    // ==========================================
+    // CONFIG & STATE
+    // ==========================================
+    // 1. Ambil daftar mapel otomatis dari file soal.js
+    const subtestOrder = Object.keys(examData); 
+    
+    // 2. Set mapel aktif ke mapel pertama yang ditemukan
+    let currentSubtest = subtestOrder[0]; 
+    let currentQIndex = 0;
+    let timeLeft = examData[currentSubtest].duration;
+    let userData = {}; // Menyimpan data user sementara
+
+    const PASSWORD_RESET = "admin123"; 
+    const MAX_PELANGGARAN = 5;
+    
+    // HTML Refs
+    const blockScreen = document.getElementById('blockScreen');
+    const countDisplay = document.getElementById('violationCountDisplay');
+    // Refs untuk Custom Popup
+    const customWarningModal = document.getElementById('customWarningModal');
+    const modalViolationCountSpan = document.getElementById('modalViolationCount');
+    const modalRemainingCountSpan = document.getElementById('modalRemainingCount');
+    const closeWarningBtn = document.getElementById('closeWarningBtn');
+
+    // State Keamanan
+    let violationCount = parseInt(getData('violationCount') || 0);
+    let isBlocked = getData('isBlocked') === 'true';
+    
+    // 🔴 PERBAIKAN UTAMA 1: Nilai awal HARUS FALSE, TIDAK BOLEH ambil dari penyimpanan saat awal muat!
+    // Penyimpanan hanya dibaca saat pemulihan sesi saja.
+    let examStarted = false; 
+    
+    let lastViolationTime = 0; 
+    let isWarningModalOpen = false;
+
+    // ==========================================
+    // STORAGE HELPERS
+    // ==========================================
+    function setData(key, value) {
+        localStorage.setItem(key, value);
+        document.cookie = key + "=" + value + "; path=/; max-age=31536000"; 
+    }
+
+    function getData(key) {
+        let match = document.cookie.match(new RegExp('(^| )' + key + '=([^;]+)'));
+        let cookieVal = match ? match[2] : null;
+        return localStorage.getItem(key) || cookieVal;
+    }
+
+    function saveProgress() {
+        const progress = {
+            userData: userData,
+            examData: examData, 
+            currentSubtest: currentSubtest, 
+            currentQIndex: currentQIndex,
+            timeLeft: timeLeft
+        };
+        localStorage.setItem('snbt_progress', JSON.stringify(progress));
+    }
+
+    function clearData() {
+        localStorage.removeItem('violationCount');
+        localStorage.removeItem('isBlocked');
+        localStorage.removeItem('examStarted');
+        localStorage.removeItem('snbt_progress'); 
+        localStorage.removeItem('subtest_end_time');
+
+        document.cookie = "violationCount=; path=/; max-age=0";
+        document.cookie = "isBlocked=; path=/; max-age=0";
+        document.cookie = "examStarted=; path=/; max-age=0";
+    }
+
+    // ==========================================
+    // 1. INITIAL LOAD & LOGIN
+    // ==========================================
+    window.onload = function() {
+        // Cek apakah sudah diblokir
+        if (isBlocked) {
+            updateView();
+            return;
+        }
+
+        // Cek progres
+        const saved = localStorage.getItem('snbt_progress');
+        if (saved) {
+            const data = JSON.parse(saved);
+            // Validasi sederhana
+            if (data.userData && data.userData.name) {
+                if (confirm("Ditemukan progres ujian sebelumnya. Ingin melanjutkan?")) {
+                    restoreSession(data);
+                } else {
+                    localStorage.removeItem('snbt_progress');
+                }
+            }
+        }
+    };
+
+    function restoreSession(data) {
+        userData = data.userData;
+        Object.assign(examData, data.examData); 
+        currentSubtest = data.currentSubtest;
+        currentQIndex = data.currentQIndex;
+        timeLeft = data.timeLeft;
+        
+        // PENTING: Set examStarted true agar sensor aktif
+        examStarted = true; 
+        setData('examStarted', 'true');
+
+        document.getElementById('loginCard').style.display = 'none';
+        document.getElementById('examInterface').style.display = 'flex';
+        document.getElementById('sideName').innerText = userData.name;
+        document.getElementById('sideNomor').innerText = userData.id;
+        
+        loadQuestion(currentQIndex);
+        startTimer(); 
+        updateView();
+    }
+
+    function handleLogin(e) {
+    e.preventDefault();
+    
+    // Ambil semua nilai dari formulir
+    const n = document.getElementById('fullname').value.toUpperCase();
+    const id = document.getElementById('participantId').value;
+    const sch = document.getElementById('school').value.toUpperCase();
+    const tgl = document.getElementById('dob').value; 
+
+    // --- AMBIL DATA KAMPUS PILIHAN ---
+    const u1 = document.getElementById('univ-1').value.toUpperCase().trim();
+    const j1 = document.getElementById('jurusan-1').value.trim();
+    const u2 = document.getElementById('univ-2').value.toUpperCase().trim();
+    const j2 = document.getElementById('jurusan-2').value.trim();
+
+    // ======================================================
+    // ✅ BAGIAN PENGECEKAN & PESAN ERROR TANPA ALERT
+    // ======================================================
+    
+    // Cari elemen pesan error (kita buat dinamis)
+    let errorBox = document.getElementById('errorNotification');
+    // Jika belum ada, buat kotak pesannya di bawah tombol
+    if (!errorBox) {
+        errorBox = document.createElement('div');
+        errorBox.id = 'errorNotification';
+        errorBox.style.color = '#dc3545'; // Warna Merah
+        errorBox.style.fontWeight = 'bold';
+        errorBox.style.textAlign = 'center';
+        errorBox.style.padding = '10px';
+        errorBox.style.marginTop = '15px';
+        errorBox.style.border = '1px solid #dc3545';
+        errorBox.style.borderRadius = '5px';
+        errorBox.style.backgroundColor = '#f8d7da';
+        // Tempelkan di paling bawah form
+        document.querySelector('.form-group:last-child').after(errorBox);
+    }
+
+    let pesanKesalahan = "";
+
+    // Cek Pilihan 1
+    if (u1 === "" || j1 === "") {
+        pesanKesalahan += "❌ Pilihan Universitas & Jurusan 1 WAJIB diisi lengkap!<br>";
+    }
+
+    // Cek Pilihan 2
+    if (u2 === "" || j2 === "") {
+        pesanKesalahan += "❌ Pilihan Universitas & Jurusan 2 WAJIB diisi lengkap!<br>";
+    }
+
+    // Jika ada yang kosong
+    if (pesanKesalahan !== "") {
+        // Tampilkan pesan di halaman, TIDAK PAKAI ALERT
+        errorBox.innerHTML = pesanKesalahan + "<small style='color:#990000;'>Lengkapi data sebelum lanjut.</small>";
+        // Gulirkan layar ke atas agar terlihat pesannya
+        window.scrollTo({top: 0, behavior: 'smooth'});
+        return; // STOP, tidak lanjut
+    } else {
+        // Jika benar semua, hilangkan pesan error
+        errorBox.remove();
+    }
+    // ======================================================
+    // ✅ SELESAI: TIDAK ADA POPUP, AMAN DARI PELANGGARAN
+    // ======================================================
+
+    // Simpan ke variabel global 'userData'
+    userData = { 
+        name: n, 
+        id: id, 
+        school: sch, 
+        birthDate: tgl,
+        email: document.getElementById('email').value.trim(),
+        univ1: u1,
+        jurusan1: j1,
+        univ2: u2,
+        jurusan2: j2
+    };
+
+    // Transisi ke Lobby (Hanya jalan jika semua data lengkap)
+    document.getElementById('loginCard').style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById('loginCard').style.display = 'none';
+        const sop = document.getElementById('sopOverlay');
+        sop.style.display = 'flex';
+        
+        document.getElementById('userDisplayLobby').innerHTML = `
+            <span class="user-name-big">${n}</span>
+            <span class="user-meta">NO: ${id} | ${sch}</span>
+            <br><small style="color:#ddd;">Pil 1: ${j1} (${u1}) | Pil 2: ${j2} (${u2})</small>
+        `;
+        setTimeout(() => sop.style.opacity = '1', 50);
+    }, 500);
+}
+    // ==========================================
+    // 2. MULAI UJIAN (START)
+    // ==========================================
+    function startExamReal() {
+        // Request Fullscreen
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(()=>{});
+        }
+
+        document.getElementById('sopOverlay').style.display = 'none';
+        document.getElementById('examInterface').style.display = 'flex';
+
+        // Render Sidebar Info
+        document.getElementById('sideName').innerText = userData.name;
+        document.getElementById('sideNomor').innerText = userData.id;
+
+        // [PENTING] Aktifkan Sensor Keamanan HANYA DI SINI
+        examStarted = true;
+        setData('examStarted', 'true');
+        console.log("Sistem Keamanan Aktif!");
+
+        // Load & Save Initial State
+        loadQuestion(0);
+        saveProgress(); // Simpan data agar aman kalau refresh
+        startTimer();
+    }
+
+    // ==========================================
+    // 3. ENGINE UJIAN (SOAL & TIMER)
+    // ==========================================
+function loadQuestion(index) {
+        currentQIndex = index;
+        const activeQuestions = examData[currentSubtest].questions;
+        const q = activeQuestions[index];
+
+        // Update Header
+        document.querySelector('.subtest-badge').innerText = examData[currentSubtest].name;
+        document.getElementById('qNumberDisplay').innerText = "Soal No. " + (index + 1);
+
+        let htmlContent = '';
+
+        // --- CEK GAMBAR ---
+        // Pastikan nama file di soal.js SAMA PERSIS dengan nama file di folder images
+        if (q.img) {
+            htmlContent += `<div style="display:flex; justify-content:center; margin-bottom:20px;">
+                <img src="${q.img}" 
+                     alt="Gagal memuat gambar. Cek nama file." 
+                     style="max-width:100%; max-height:400px; height:auto; border:1px solid #ccc; border-radius:8px; padding:5px;">
+            </div>`;
+        }
+
+        // --- TEKS SOAL ---
+        htmlContent += `<div style="font-size:1.15rem; line-height:1.7; color:#222;">${q.text}</div>`;
+
+        document.getElementById('qTextDisplay').innerHTML = htmlContent;
+
+        // Perintah agar KaTeX mencari simbol $ dan mengubahnya jadi rumus matematika
+renderMathInElement(document.getElementById("qTextDisplay"), {
+    delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+    ],
+    throwOnError: false
+});
+
+        // --- OPSI JAWABAN ---
+        const box = document.getElementById('optionsContainer');
+        box.innerHTML = '';
+        const abc = ['A','B','C','D','E'];
+
+        q.options.forEach((opt, i) => {
+            const div = document.createElement('div');
+            div.className = 'option-card ' + (q.answer === i ? 'selected' : '');
+            div.onclick = () => selectAnswer(i);
+            div.innerHTML = `<div class="opt-letter">${abc[i]}</div><div class="opt-text">${opt}</div>`;
+            box.appendChild(div);
+        });
+
+// Letakkan ini setelah teks soal dan opsi jawaban muncul di layar
+renderMathInElement(document.getElementById("examInterface"), {
+    delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+    ],
+    throwOnError: false
+});
+        renderNavGrid();
+        saveProgress();
+    }
+
+    function selectAnswer(optIndex) {
+        const activeQuestions = examData[currentSubtest].questions;
+        activeQuestions[currentQIndex].answer = optIndex;
+        activeQuestions[currentQIndex].doubt = false; 
+        loadQuestion(currentQIndex);
+    }
+
+    function toggleDoubt() {
+        const activeQuestions = examData[currentSubtest].questions;
+        activeQuestions[currentQIndex].doubt = !activeQuestions[currentQIndex].doubt;
+        renderNavGrid();
+        saveProgress();
+    }
+
+    function renderNavGrid() {
+        const grid = document.getElementById('navGrid');
+        grid.innerHTML = '';
+        const activeQuestions = examData[currentSubtest].questions;
+
+        activeQuestions.forEach((q, i) => {
+            const btn = document.createElement('div');
+            let cls = 'nav-box';
+            if(i === currentQIndex) cls += ' active';
+            if(q.answer !== null) cls += ' answered';
+            if(q.doubt) cls += ' doubt';
+
+            btn.className = cls;
+            btn.innerText = i + 1;
+            btn.onclick = () => loadQuestion(i);
+            grid.appendChild(btn);
+        });
+    }
+
+    // ==========================================
+    // SENSOR KEAMANAN (PERBAIKAN TOTAL KHUSUS HP)
+    // ==========================================
+    
+    function processViolation() {
+    // 🔒 PENGAMAN MUTLAK: JANGAN LAKUKAN APA-APA JIKA TIDAK SYARAT
+    if (!examStarted || isBlocked || isExamFinished || isWarningModalOpen || document.hidden === false) {
+        return; 
+    }
+
+    // 2. CEK JEDA WAKTU DIPERPANJANG JADI 3 DETIK (LEBIH AMAN)
+    const now = Date.now();
+    if (now - lastViolationTime < 3000) {
+        return; 
+    }
+    lastViolationTime = now;
+
+        // 3. Tambah Pelanggaran
+        violationCount++;
+        setData('violationCount', violationCount);
+
+        // 4. Update Tampilan Angka
+        if (countDisplay) countDisplay.innerText = violationCount;
+        if (modalViolationCountSpan) modalViolationCountSpan.innerText = violationCount;
+        if (modalRemainingCountSpan) modalRemainingCountSpan.innerText = (MAX_PELANGGARAN - violationCount);
+
+        // 5. Cek Hukuman
+        if (violationCount >= MAX_PELANGGARAN) {
+            if (typeof blockExam === 'function') blockExam();
+        } else {
+            if (customWarningModal) {
+                customWarningModal.style.display = 'flex';
+                isWarningModalOpen = true;
+            }
+        }
+    }
+
+    // ==========================================
+    // FUNGSI BLOKIR
+    // ==========================================
+    function blockExam() {
+        console.log("BLOKIR DIEKSEKUSI!");
+        
+        // 1. Set Status Terblokir
+        isBlocked = true;
+        try { setData('isBlocked', 'true'); } catch (e) { localStorage.setItem('isBlocked', 'true'); }
+
+        // 2. Munculkan Layar Merah
+        const screen = document.getElementById('blockScreen');
+        if (screen) {
+            screen.style.display = 'flex'; 
+        } else {
+            alert("ANDA DIBLOKIR KARENA PELANGGARAN!");
+            document.body.innerHTML = "<h1 style='color:red; text-align:center; padding-top:100px;'>AKSES UJIAN DIBLOKIR</h1>";
+        }
+        
+        // 3. Matikan Timer
+        if (window.timerInterval) clearInterval(window.timerInterval);
+    }
+
+    // ==========================================
+    // PASANG SENSOR (DIPERKUAT KHUSUS HP)
+    // ==========================================
+    window.addEventListener('blur', function() {
+        // ✅ HANYA JALAN JIKA UJIAN SUDAH DIMULAI
+        if (examStarted && !isBlocked && !isWarningModalOpen) {
+            processViolation();
+        }
+    });
+
+    document.addEventListener('visibilitychange', function() {
+        // ✅ ATURAN PALING KETAT UNTUK HP:
+        // Hanya hitung jika: 
+        // 1. Halaman disembunyikan (pindah aplikasi/minimize)
+        // 2. Ujian SUDAH dimulai
+        // 3. TIDAK sedang diblokir
+        // 4. TIDAK sedang ada pesan peringatan muncul
+        if (document.hidden && examStarted && !isBlocked && !isWarningModalOpen) {
+            processViolation();
+        }
+    });
+
+    // KEYBOARD SHORTCUTS
+    document.addEventListener('keydown', function(e) {
+        // Reset: Ctrl + Shift + 9
+        if (e.ctrlKey && e.shiftKey && e.keyCode === 57) {
+            e.preventDefault();
+            setTimeout(() => {
+                let pass = prompt("PASSWORD RESET:");
+                if (pass === PASSWORD_RESET) {
+                    clearData();
+                    alert("Sistem Reset. Reloading...");
+                    location.reload(); 
+                } else if(pass) {
+                    alert("Password Salah!");
+                }
+            }, 100);
+            return false;
+        }
+        // Block Inspect
+        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67 || e.keyCode == 85))) {
+            e.preventDefault(); return false;
+        }
+    });
+
+  
+
+    function nextQuestion() {
+        const activeQuestions = examData[currentSubtest].questions;
+        if(currentQIndex < activeQuestions.length - 1) {
+            loadQuestion(currentQIndex + 1);
+        } else {
+            showConfirmationModal('subtest');
+        }
+    }
+    
+    function prevQuestion() {
+        if(currentQIndex > 0) loadQuestion(currentQIndex - 1);
+    }
+
+    function nextSubtest() {
+        let currentIndex = subtestOrder.indexOf(currentSubtest);
+        if (currentIndex < subtestOrder.length - 1) {
+            currentSubtest = subtestOrder[currentIndex + 1];
+            localStorage.removeItem('subtest_end_time'); 
+            currentQIndex = 0;
+            loadQuestion(0);
+            startTimer(); 
+        } else {
+            showConfirmationModal('final'); 
+        }
+    }
+
+    function startTimer() {
+        let endTime = localStorage.getItem('subtest_end_time');
+        if (!endTime) {
+            endTime = Date.now() + (examData[currentSubtest].duration * 1000);
+            localStorage.setItem('subtest_end_time', endTime);
+        }
+
+        const el = document.getElementById('timerDisplay');
+        if (window.timerInterval) clearInterval(window.timerInterval);
+
+        window.timerInterval = setInterval(() => {
+            let now = Date.now();
+            let distance = endTime - now;
+            let m = Math.floor(distance / (1000 * 60));
+            let s = Math.floor((distance % (1000 * 60)) / 1000);
+
+            el.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+
+            if (distance <= 0) {
+                clearInterval(window.timerInterval);
+                localStorage.removeItem('subtest_end_time'); 
+                nextSubtest();
+            }
+        }, 1000);
+    }
+
+    function finishExam() {
+        let currentIndex = subtestOrder.indexOf(currentSubtest);
+        if (currentIndex < subtestOrder.length - 1) {
+            showConfirmationModal('subtest');
+        } else {
+            showConfirmationModal('final');
+        }
+    }
+
+    // ==========================================
+    // 4. MODALS (FINISH & CONFIRM)
+    // ==========================================
+    function showConfirmationModal(type) {
+        const activeQuestions = examData[currentSubtest].questions;
+        let answered = 0;
+        activeQuestions.forEach(q => { if (q.answer !== null) answered++; });
+
+        document.getElementById('statAnswered').innerText = answered;
+        document.getElementById('statUnanswered').innerText = activeQuestions.length - answered;
+
+        const header = document.getElementById('modalHeader');
+        const msg = document.getElementById('modalMessage');
+        const warn = document.getElementById('timeWarning');
+        const btn = document.getElementById('confirmBtn');
+
+        if (type === 'subtest') {
+            header.innerText = "KONFIRMASI PINDAH SUBTES";
+            header.style.background = "#2c7be5"; 
+            msg.innerText = `Anda akan mengakhiri subtes ${examData[currentSubtest].name}.`;
+            warn.innerText = `Jika lanjut, sisa waktu akan hangus!`;
+            btn.innerText = "YAKIN & LANJUT";
+            btn.onclick = () => { processNextSubtest(); }; 
+        } else {
+            header.innerText = "KONFIRMASI AKHIR UJIAN";
+            header.style.background = "#d9534f"; 
+            msg.innerText = "Anda akan mengakhiri seluruh rangkaian ujian.";
+            warn.innerText = "Jawaban tidak dapat diubah setelah ini!";
+            btn.innerText = "SELESAI UJIAN";
+            btn.onclick = () => { processFinalFinish(); };
+        }
+        document.getElementById('finishModal').style.display = 'flex';
+    }
+
+    function processNextSubtest() {
+        closeFinishModal();
+        nextSubtest();
+    }
+
+function processFinalFinish() {
+    isExamFinished = true;
+    
+    // Matikan timer agar tidak berjalan di balik layar
+    if (typeof window.timerInterval !== 'undefined') clearInterval(window.timerInterval);
+
+    // ==========================================
+// 1. HITUNG SKOR & JUMLAH BENAR (DIPERBAIKI UTBK STYLE)
+// ==========================================
+let s = {};      // Objek untuk Sertifikat (Skor saja)
+let stats = {};  // Objek untuk Spreadsheet (Skor + Jumlah Benar)
+
+for (let key in examData) {
+    let sub = examData[key];
+    let subScore = 0;       // Poin yang didapat (mentah)
+    let totalPoinMaks = 0;  // Total poin jika semua dijawab benar
+    let correctCount = 0;   // Tambahan: Hitung jumlah soal yang benar
+
+    // Loop setiap soal untuk cek jawaban & hitung poin maksimal
+    sub.questions.forEach(q => {
+        let poinSoal = q.score || 0; // Ambil bobot soal dari soal.js
+        
+        // Hitung total poin yang bisa didapat subtes ini
+        totalPoinMaks += poinSoal;
+
+        // Cek jawaban benar
+        if (q.answer === q.correctAnswer) {
+            subScore += poinSoal;
+            correctCount++; 
+        }
+    });
+
+    // === RUMUS KONVERSI UTBK: SKALA 200 - 1000 ===
+    let nilaiAkhir;
+    if (totalPoinMaks === 0) {
+        nilaiAkhir = 200; // Kalau tidak ada soal, langsung 200
+    } else {
+        // Rumus: Nilai = 200 + (Persentase Benar × 800)
+        let persentase = subScore / totalPoinMaks;
+        nilaiAkhir = 200 + (persentase * 800);
+        
+        // Pembulatan ke angka bulat & batasi nilai (min 200, maks 1000)
+        nilaiAkhir = Math.round(nilaiAkhir);
+        nilaiAkhir = Math.max(200, Math.min(1000, nilaiAkhir));
+    }
+
+    let k = key.toLowerCase(); // Contoh: "PU" jadi "pu"
+    
+    // ✅ DIKEMBALIKAN KE FORMAT ASLIMU (.toFixed(2)) AGAR DATA LAIN TETAP MUNCUL
+    // Tapi isinya SUDAH NILAI KONVERSI 200-1000
+    s[k] = nilaiAkhir.toFixed(2); 
+    
+    // ✅ STRUKTUR STAT TETAP SAMA PERSIS DENGAN ASLIMU
+    stats[k] = { 
+        score: nilaiAkhir,      // Nilai akhir skala 200-1000
+        correct: correctCount   // Jumlah benar (tetap ada seperti asli)
+    };
+}
+    // ==========================================
+    // 2. KIRIM KE SPREADSHEET (LATAR BELAKANG)
+    // ==========================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxW2OF4yoLFo5gVYjdha39mk3MIsUFwC6dAtfq1Bp_pdzeC9DNqyeS8rAnoePPnJrk8/exec";
+    
+    // Mapping Data: Menyesuaikan "bi/en" (HTML) ke "lit_indo/lit_ingg" (Apps Script)
+    let dataKirim = {
+        nama: userData.name || "-",
+        nomor: userData.id || "-",
+        sekolah: userData.school || "-",
+        tgl_lahir: userData.birthDate || "-",
+        email: userData.email || "-",
+        // --- DATA KAMPUS BARU YANG AKAN MASUK KE GS ---
+        pilihan_univ_1: userData.univ1 || "-",
+        pilihan_jurusan_1: userData.jurusan1 || "-",
+        pilihan_univ_2: userData.univ2 || "-",
+        pilihan_jurusan_2: userData.jurusan2 || "-",
+    // ----------------------------------------------
+        pelanggaran: violationCount || 0,
+
+        // Ambil data dari hasil hitungan di atas (pakai ?. agar tidak error jika mapel tidak ada)
+        benar_pu: stats['pu']?.correct || 0,   skor_pu: stats['pu']?.score || 0,
+        benar_ppu: stats['ppu']?.correct || 0, skor_ppu: stats['ppu']?.score || 0,
+        benar_pbm: stats['pbm']?.correct || 0, skor_pbm: stats['pbm']?.score || 0,
+        benar_pk: stats['pk']?.correct || 0,   skor_pk: stats['pk']?.score || 0,
+        
+        // Perhatikan bagian ini: Mapping BI -> lit_indo, EN -> lit_ingg
+        benar_lit_indo: stats['bi']?.correct || 0, skor_lit_indo: stats['bi']?.score || 0,
+        benar_lit_ingg: stats['en']?.correct || 0, skor_lit_ingg: stats['en']?.score || 0,
+        
+        benar_pm: stats['pm']?.correct || 0,   skor_pm: stats['pm']?.score || 0
+    };
+
+    // Kirim (Fire and Forget)
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataKirim)
+    }).catch(e => console.log("Gagal lapor spreadsheet:", e));
+
+    // ==========================================
+    // 3. TAMPILKAN SERTIFIKAT (FORMAT LAMA ANDA)
+    // ==========================================
+    let html = `
+        <tr class="group-title"><td colspan="2">Tes Potensi Skolastik (TPS)</td></tr>
+        <tr><td>Penalaran Umum</td><td align="right">${s['pu'] || '0.00'}</td></tr>
+        <tr><td>Pengetahuan & Pemahaman Umum</td><td align="right">${s['ppu'] || '0.00'}</td></tr>
+        <tr><td>Memahami Bacaan & Menulis</td><td align="right">${s['pbm'] || '0.00'}</td></tr>
+        <tr><td>Pengetahuan Kuantitatif</td><td align="right">${s['pk'] || '0.00'}</td></tr>
+        
+        <tr class="group-title"><td colspan="2">Tes Literasi Bahasa</td></tr>
+        <tr><td>Literasi Bahasa Indonesia</td><td align="right">${s['bi'] || '0.00'}</td></tr>
+        <tr><td>Literasi Bahasa Inggris</td><td align="right">${s['en'] || '0.00'}</td></tr>
+        
+        <tr class="group-title"><td colspan="2">Tes Penalaran Matematika</td></tr>
+        <tr><td>Penalaran Matematika</td><td align="right">${s['pm'] || '0.00'}</td></tr>
+    `;
+
+    document.getElementById('cert-name').innerText = userData.name || "-";
+    document.getElementById('cert-id').innerText = userData.id || "-";
+    document.getElementById('cert-school').innerText = userData.school || "-";
+    document.getElementById('cert-date').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('cert-score-body').innerHTML = html;
+
+    // Bagian TTL
+    let rawTgl = userData.birthDate;
+    let tglCantik = '-';
+    if (rawTgl) {
+        tglCantik = new Date(rawTgl).toLocaleDateString('id-ID', { 
+            day: 'numeric', month: 'long', year: 'numeric' 
+        });
+    }
+    document.getElementById('cert-ttl').innerText = tglCantik;
+
+    // Sembunyikan ujian, tampilkan modal sertifikat
+    document.getElementById('examInterface').style.display = 'none';
+    document.getElementById('certificateModal').style.display = 'flex';
+    
+    // Hapus data progres agar tidak resume ujian yang sudah selesai
+    localStorage.removeItem('snbt_progress');
+    localStorage.removeItem('subtest_end_time');
+    localStorage.removeItem('examStarted');
+}
+
+    function closeFinishModal() {
+        document.getElementById('finishModal').style.display = 'none';
+    }
+
+    // ==========================================
+    // 5. SECURITY LOGIC (UPDATED WITH MODAL)
+    // ==========================================
+    
+    function updateView() {
+        if(countDisplay) countDisplay.innerText = violationCount;
+        if (isBlocked) {
+            if(blockScreen) blockScreen.style.display = "flex";
+            document.body.style.overflow = "hidden";
+            // Tutup popup warning jika sudah blokir permanen
+            if(customWarningModal) customWarningModal.style.display = 'none';
+        }
+    }
+
+    function showCustomWarning(count, remaining) {
+        if(modalViolationCountSpan) modalViolationCountSpan.innerText = count;
+        if(modalRemainingCountSpan) modalRemainingCountSpan.innerText = remaining;
+        
+        if(customWarningModal) {
+            customWarningModal.style.display = 'flex';
+            isWarningModalOpen = true; 
+            // Trigger animasi getar
+            const box = customWarningModal.querySelector('.warning-modal-box');
+            if(box) {
+                box.classList.remove('animate-shake');
+                void box.offsetWidth; 
+                box.classList.add('animate-shake');
+            }
+        }
+    }
+
+    // Logic Tombol Tutup Warning
+    if(closeWarningBtn) {
+        closeWarningBtn.addEventListener('click', function() {
+            if(customWarningModal) customWarningModal.style.display = 'none';
+            // Reset timer agar tidak double count setelah menutup
+            lastViolationTime = new Date().getTime();
+            setTimeout(() => { isWarningModalOpen = false; }, 500);
+        });
+    }
+
+    function addViolation() {
+        // [PENTING] Cek examStarted disini. Jika belum mulai ujian, JANGAN pelanggaran.
+        if (!examStarted || isBlocked || isWarningModalOpen) return;
+
+        let currentTime = new Date().getTime();
+        if (currentTime - lastViolationTime < 2000) return; 
+        
+        lastViolationTime = currentTime;
+
+        violationCount++;
+        setData('violationCount', violationCount);
+        updateView();
+
+        if (violationCount >= MAX_PELANGGARAN) {
+            isBlocked = true;
+            setData('isBlocked', 'true');
+            updateView();
+        } else {
+            // Tampilkan popup custom setelah update view
+            setTimeout(() => {
+                let sisa = MAX_PELANGGARAN - violationCount;
+                showCustomWarning(violationCount, sisa);
+            }, 100);
+        }
+    }
+
+    // ==========================================
+// SENSOR KEAMANAN (PERBAIKAN DOUBLE COUNT)
+// ==========================================
+
+function processViolation() {
+// 🔒 SUDAH BENAR: Kondisi ini memastikan TIDAK HITUNG saat belum mulai/selesai/blokir/pesan muncul
+if (!examStarted || isBlocked || isExamFinished || isWarningModalOpen) return;
+
+    // 2. CEK JEDA WAKTU (SOLUSI DOUBLE HITUNG)
+    const now = Date.now();
+    if (now - lastViolationTime < 2000) {
+        return; 
+    }
+    lastViolationTime = now;
+
+    // 3. Tambah Pelanggaran
+    violationCount++;
+    setData('violationCount', violationCount);
+
+    // 4. Update Tampilan Angka
+    if (countDisplay) countDisplay.innerText = violationCount;
+    if (modalViolationCountSpan) modalViolationCountSpan.innerText = violationCount;
+    if (modalRemainingCountSpan) modalRemainingCountSpan.innerText = (MAX_PELANGGARAN - violationCount);
+
+    // 5. Cek Hukuman
+    if (violationCount >= MAX_PELANGGARAN) {
+        if (typeof blockExam === 'function') blockExam();
+    } else {
+        if (customWarningModal) {
+            customWarningModal.style.display = 'flex';
+            isWarningModalOpen = true;
+        }
+    }
+
+}
+
+// ==========================================
+// FUNGSI BLOKIR (WAJIB ADA AGAR LAYAR MERAH MUNCUL)
+// ==========================================
+function blockExam() {
+    console.log("BLOKIR DIEKSEKUSI!");
+    
+    // 1. Set Status Terblokir
+    isBlocked = true;
+    try { setData('isBlocked', 'true'); } catch (e) { localStorage.setItem('isBlocked', 'true'); }
+
+    // 2. Munculkan Layar Merah
+    const screen = document.getElementById('blockScreen');
+    if (screen) {
+        screen.style.display = 'flex'; 
+    } else {
+        alert("ANDA DIBLOKIR KARENA PELANGGARAN!");
+        document.body.innerHTML = "<h1 style='color:red; text-align:center; padding-top:100px;'>AKSES UJIAN DIBLOKIR</h1>";
+    }
+    
+    // 3. Matikan Timer
+    if (window.timerInterval) clearInterval(window.timerInterval);
+}
+
+// Pasang Sensor Baru
+window.addEventListener('blur', processViolation);
+
+// 🔴 BAGIAN INI YANG DIPERBAIKI KHUSUS HP
+document.addEventListener('visibilitychange', () => {
+    // ✅ SYARAT LENGKAP: Hanya hitung jika: Halaman disembunyikan DAN Ujian SUDAH mulai DAN TIDAK sedang ada pesan peringatan
+    if (document.hidden && examStarted && !isBlocked && !isWarningModalOpen) {
+        processViolation();
+    }
+});
+
+// KEYBOARD SHORTCUTS
+document.addEventListener('keydown', function(e) {
+    // Reset: Ctrl + Shift + 9
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 57) {
+        e.preventDefault();
+        setTimeout(() => {
+            let pass = prompt("PASSWORD RESET:");
+            if (pass === PASSWORD_RESET) {
+                clearData();
+                alert("Sistem Reset. Reloading...");
+                location.reload(); 
+            } else if(pass) {
+                alert("Password Salah!");
+            }
+        }, 100);
+        return false;
+    }
+    // Block Inspect
+    if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67 || e.keyCode == 85))) {
+        e.preventDefault(); return false;
+    }
+});
+
+    // ==========================================
+    // 6. FITUR RESET KHUSUS HP (TAHAN LAYAR 5 DETIK)
+    // ==========================================
+
+    let pressTimer;
+
+    function startLongPress() {
+        // Mulai hitung mundur 5 detik (5000 ms)
+        pressTimer = setTimeout(function() {
+            // Aksi setelah berhasil tahan 5 detik
+            let pass = prompt("PASSWORD RESET ADMIN:");
+            if (pass === PASSWORD_RESET) {
+                clearData();
+                alert("Sistem berhasil di-reset!");
+                location.reload();
+            } else {
+                if (pass) alert("Password Salah!");
+            }
+        }, 5000); 
+    }
+
+    function cancelLongPress() {
+        // Batalkan jika jari diangkat atau digeser sebelum 5 detik
+        if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+        }
+    }
+
+    // A. Pasang di Layar Blokir (Area Merah)
+    if (blockScreen) {
+        blockScreen.addEventListener('touchstart', startLongPress, {passive: true});
+        blockScreen.addEventListener('touchend', cancelLongPress);
+        blockScreen.addEventListener('touchmove', cancelLongPress); // Batal jika jari goyang/scroll
+    }
+
+    // B. Opsional: Pasang juga di Logo (jika stuck di halaman login)
+    // Cari elemen gambar logo
+    const logos = document.querySelectorAll('img');
+    logos.forEach(img => {
+        img.addEventListener('touchstart', (e) => {
+            // Cegah menu konteks gambar muncul
+            e.preventDefault(); 
+            startLongPress();
+        });
+        img.addEventListener('touchend', cancelLongPress);
+        img.addEventListener('touchmove', cancelLongPress);
+    });
+
+    // Block Context Menu
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    
+    // Resize Font
+    window.resizeFont = function(size) {
+        document.getElementById('qTextDisplay').style.fontSize = size + 'px';
+    }
+    
+    // Fix Fullscreen Exit
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+            document.body.style.display = 'none';
+            setTimeout(() => {
+                document.body.style.display = 'flex'; // Kembalikan ke flex center
+                window.scrollTo(0, 0);
+            }, 10);
+        }
+    });
+
+        // =======================================================
+// PERBAIKAN MUTLAK: SINKRONISASI DATA PTN
+// =======================================================
+
+// 1. PASTIKAN URL INI ADALAH URL TERBARU HASIL DEPLOY!
+const SCRIPT_URL_GET = "https://script.google.com/macros/s/AKfycbxW2OF4yoLFo5gVYjdha39mk3MIsUFwC6dAtfq1Bp_pdzeC9DNqyeS8rAnoePPnJrk8/exec";
+
+let databasePTN = [];
+
+// Ambil elemen HTML
+const listUniv1 = document.getElementById('list-univ-1');
+const listUniv2 = document.getElementById('list-univ-2');
+const inputUniv1 = document.getElementById('univ-1');
+const inputUniv2 = document.getElementById('univ-2');
+const selectJurusan1 = document.getElementById('jurusan-1');
+const selectJurusan2 = document.getElementById('jurusan-2');
+
+// JALANKAN LANGSUNG TANPA TUNGGU DOM LOADED
+ambilDataDariGS();
+
+function ambilDataDariGS() {
+    // PERBAIKAN: Beri pesan saat memuat
+    inputUniv1.placeholder = "Sedang memuat daftar kampus...";
+    inputUniv2.placeholder = "Sedang memuat daftar kampus...";
+    
+    fetch(SCRIPT_URL_GET)
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert("ERROR GS: " + data.error); // <-- INI PENTING! Kalau ada salah nama sheet, akan muncul pesan ini.
+            return;
+        }
+
+        databasePTN = data;
+        console.log("Data berhasil dimuat: ", databasePTN.length, " data");
+
+        // Ambil daftar nama universitas unik
+        const daftarUniv = [...new Set(databasePTN.map(item => item.u))].sort();
+
+        // Masukkan ke kotak input
+        daftarUniv.forEach(namaUniv => {
+            listUniv1.appendChild(new Option(namaUniv, namaUniv));
+            listUniv2.appendChild(new Option(namaUniv, namaUniv));
+        });
+    })
+    .catch(err => {
+    inputUniv1.placeholder = "Gagal memuat, coba muat ulang";
+    inputUniv2.placeholder = "Gagal memuat, coba muat ulang";
+    // Hapus alert agar tidak mengganggu, cukup tulisan di kotak
+    console.log("Error GS:", err);
+});
+}
+
+// Filter Jurusan 1
+inputUniv1.addEventListener('input', function() {
+    const cari = this.value.toUpperCase().trim();
+    const hasil = databasePTN.filter(x => x.u === cari);
+
+    selectJurusan1.innerHTML = '';
+    if (hasil.length > 0) {
+        selectJurusan1.disabled = false;
+        selectJurusan1.appendChild(new Option("-- Pilih Jurusan --", ""));
+        hasil.forEach(prodi => {
+            selectJurusan1.appendChild(new Option(prodi.p, prodi.p));
+        });
+    } else {
+        selectJurusan1.disabled = true;
+        selectJurusan1.appendChild(new Option("-- Universitas Tidak Ditemukan --", ""));
+    }
+});
+
+// Filter Jurusan 2
+inputUniv2.addEventListener('input', function() {
+    const cari = this.value.toUpperCase().trim();
+    const hasil = databasePTN.filter(x => x.u === cari);
+
+    selectJurusan2.innerHTML = '';
+    if (hasil.length > 0) {
+        selectJurusan2.disabled = false;
+        selectJurusan2.appendChild(new Option("-- Pilih Jurusan --", ""));
+        hasil.forEach(prodi => {
+            selectJurusan2.appendChild(new Option(prodi.p, prodi.p));
+        });
+    } else {
+        selectJurusan2.disabled = true;
+        selectJurusan2.appendChild(new Option("-- Universitas Tidak Ditemukan --", ""));
+    }
+});
+
+        // FUNGSI KHUSUS TOMBOL PERBAIKI DATA - TAMBAHKAN INI SAJA
+function backToLogin() {
+    // Sembunyikan halaman peraturan
+    document.getElementById('sopOverlay').style.display = 'none';
+    // Tampilkan kembali halaman login
+    document.getElementById('loginCard').style.display = 'flex';
+    document.getElementById('loginCard').style.opacity = '1';
+}
+    
+    </script>
+
+    <div id="certificateModal">
+    <div class="cert-card has-watermark">
+
+        <div class="cert-header">
+            <img src="sikatsnbt.png" alt="Logo Bimbel">
+            <div class="cert-header-text">
+                <h1>SERTIFIKAT HASIL</h1>
+                <p class="fw-bold">TRY OUT BERBASIS KOMPUTER (TOBK) SNBT 2026</p>
+            </div>
+            <img src="aktech.png" alt="Logo TOBK" style="height: 65px; width: auto;" onerror="this.style.visibility='hidden'">
+        </div>
+
+        <div class="cert-content">
+            <div class="cert-left">
+                <table class="cert-user-table">
+                    <tr><td width="35%">Nama</td><td width="5%">:</td><td id="cert-name"></td></tr>
+                    <tr><td>TTL</td><td>:</td><td id="cert-ttl">-</td></tr>
+                    <tr><td>Nomor Peserta</td><td>:</td><td id="cert-id"></td></tr>
+                    <tr><td>Asal Sekolah</td><td>:</td><td id="cert-school"></td></tr>
+                </table>
+
+                <p class="cert-desc">
+                    Telah mengikuti TOBK pada tanggal <span id="cert-date" class="fw-bold"></span>. Hasil ujian ini merupakan skor perolehan riil pengerjaan peserta dan dapat digunakan sebagai bahan proyeksi serta pemetaan kemampuan untuk persiapan seleksi masuk Perguruan Tinggi Negeri.
+                </p>
+
+                <div class="cert-footer-box signature-area">
+                    <img src="ttd.png" alt="-" class="signature-img">
+                    <p class="signature-text">Ketua Panitia TOBK</p>
+                </div>
+            </div>
+
+            <div class="cert-right">
+                <table class="cert-score-table">
+                    <tbody id="cert-score-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="cert-buttons">
+            <button class="btn-print" onclick="window.print()">Cetak Sertifikat</button>
+            <button class="btn-close" onclick="location.reload()">Selesai</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
